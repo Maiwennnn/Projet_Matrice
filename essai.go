@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
+	"strconv"
 )
 
 func ReadFile(fileName string) string {
@@ -24,10 +26,33 @@ func ReadFile(fileName string) string {
 	s := string(data)
 	return s
 }
+
+func ecritDansFichier(mat [][]int, nameFile string) {
+	file, err := os.OpenFile(nameFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0600)
+	defer file.Close() // on ferme automatiquement à la fin de notre programme
+	for i := 0; i < len(mat); i++ {
+		s := ""
+		for j := 0; j < len(mat); j++ {
+			s = s + strconv.Itoa(mat[i][j]) + " "
+		}
+
+		_, err = file.WriteString(s) // écrire dans le fichier
+		s = "\n"
+		_, err = file.WriteString(s)
+	}
+	fmt.Print(err)
+}
 func main() {
+	a := [][]int{
+		{0, 3},
+		{6, 7},
+	}
+
+	ecritDansFichier(a, "test.txt")
 	matEnStr := ReadFile("test.txt")
 	fmt.Printf("2eme print")
 	fmt.Printf(matEnStr)
+
 	/*data, err := os.ReadFile("test.txt")
 	if err != nil {
 		log.Fatal(err)
