@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 )
 
 func ReadFile(fileName string) string {
@@ -42,6 +43,42 @@ func ecritDansFichier(mat [][]int, nameFile string) {
 	}
 	fmt.Print(err)
 }
+func printMat(mat [][]int) {
+	//This function displays any matrix on the terminal
+	fmt.Println("***Matrice***")
+	for i := 0; i < len(mat); i++ {
+		for j := 0; j < len(mat); j++ {
+			fmt.Print((mat)[i][j], " ")
+		}
+		fmt.Println("")
+	}
+}
+func createMat(n int, k int) [][]int {
+	//This function creates a square slice matrix of size n,
+	//containing j in every cell
+	mat := make([][]int, n)
+	for i := range mat {
+		mat[i] = make([]int, n)
+	}
+	for i := 0; i < len(mat); i++ {
+		for j := 0; j < len(mat); j++ {
+			mat[i][j] = k
+		}
+	}
+	fmt.Println("La matrice suivante a été crée : ")
+	printMat(mat)
+	return mat
+}
+
+func createEmptyMat(n int) [][]int {
+	//This function creates an empty square slice matrix of size n
+	mat := make([][]int, n)
+	for i := range mat {
+		mat[i] = make([]int, n)
+	}
+	fmt.Println("Une matrice vide a été créée ")
+	return mat
+}
 
 func createMat(n int, k int) [][]int {
 	//This function creates a square slice matrix of size n,
@@ -76,7 +113,21 @@ func matProduct(mat1 [][]int, mat2 [][]int) [][]int {
 
 func main() {
 	mata := ReadFile("matriceA.txt")
-	matb := ReadFile("matriceB.txt")
+	//matb := ReadFile("matriceB.txt")
+
+	mata2 := strings.Split(mata, " ")
+	fmt.Printf("Print de la matrice sous forme de tableau de char \n")
+	for i := 0; i < len(mata2); i++ {
+		fmt.Printf(mata2[i])
+	}
+	mata3 := make([]string, 1)
+	for i := 0; i < len(mata2); i++ {
+		mata3 := append(strings.Split(mata2[i], "\n"))
+	}
+	print(len(mata3))
+	for i := 0; i < len(mata3); i++ {
+		fmt.Printf(mata3[i])
+	}
 
 	matC := matProduct()
 
