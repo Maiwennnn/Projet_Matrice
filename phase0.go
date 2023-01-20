@@ -113,7 +113,7 @@ func matProduct(mat1 [][]int, mat2 [][]int) [][]int {
 
 func main() {
 	mata := ReadFile("matriceA.txt")
-	//matb := ReadFile("matriceB.txt")
+	matb := ReadFile("matriceB.txt")
 
 	mata2 := strings.Split(mata, " ")
 	fmt.Printf("Print de la matrice sous forme de tableau de char \n")
@@ -127,6 +127,20 @@ func main() {
 	print(len(mata3))
 	for i := 0; i < len(mata3); i++ {
 		fmt.Printf(mata3[i])
+	}
+
+	matb2 := strings.Split(matb, " ")
+	fmt.Printf("Print de la matrice sous forme de tableau de char \n")
+	for i := 0; i < len(matb2); i++ {
+		fmt.Printf(matb2[i])
+	}
+	matb3 := make([]string, 1)
+	for i := 0; i < len(matb2); i++ {
+		matb3 := append(strings.Split(matb2[i], "\n"))
+	}
+	print(len(matb3))
+	for i := 0; i < len(matb3); i++ {
+		fmt.Printf(matb3[i])
 	}
 
 	matC := matProduct()
