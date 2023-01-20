@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
 	"strconv"
 	"strings"
 )
 
-go func ReadFile1(fileName string) string {
+func ReadFile1(fileName string) string {
 
 	fmt.Printf("\n\nReading a file in Go lang\n")
 	//fileName := "test.txt"
@@ -27,7 +28,6 @@ go func ReadFile1(fileName string) string {
 	return s
 }
 
-/*
 func ecritDansFichier(mat [][]int, nameFile string) {
 	file, err := os.OpenFile(nameFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0600)
 	defer file.Close() // on ferme automatiquement à la fin de notre programme
@@ -52,22 +52,6 @@ func printMat(mat [][]int) {
 		}
 		fmt.Println("")
 	}
-}
-func createMat(n int, k int) [][]int {
-	//This function creates a square slice matrix of size n,
-	//containing j in every cell
-	mat := make([][]int, n)
-	for i := range mat {
-		mat[i] = make([]int, n)
-	}
-	for i := 0; i < len(mat); i++ {
-		for j := 0; j < len(mat); j++ {
-			mat[i][j] = k
-		}
-	}
-	fmt.Println("La matrice suivante a été crée : ")
-	printMat(mat)
-	return mat
 }
 
 func createEmptyMat(n int) [][]int {
@@ -109,91 +93,76 @@ func matProduct(mat1 [][]int, mat2 [][]int) [][]int {
 	}
 	printMat(res)
 	return res
-}*/
+}
+
+func matriceEnInt(data string) [][]int {
+	data2 := strings.Split(data, "\n")
+	fmt.Println("string split a la ligne")
+	fmt.Println(data2)
+	fmt.Printf("\n Détection de la taille de la matrice \n")
+	n := len(data2)
+	fmt.Println("La matrice est de taille", n)
+	fmt.Print(data2[0])
+	fmt.Print(data2[1])
+	fmt.Print(data2[2])
+
+	//On fait une matrice de strings
+	data3 := make([][]string, n)
+	for i := range data3 {
+		data3[i] = make([]string, n)
+	}
+
+	for i := range data2 {
+		splitage := strings.Split(data2[i], " ")
+		for j := range splitage {
+			data3[i][j] = splitage[j]
+		}
+	}
+
+	fmt.Printf("\n Print de la matrice sous forme de matrice de char \n")
+	for i := 0; i < len(data3); i++ {
+		for j := 0; j < len(data3); j++ {
+			fmt.Printf(data3[i][j])
+		}
+		fmt.Println("")
+	}
+
+	fmt.Println("On convertit les strings du tableau en entiers")
+
+	matrice_finale := make([][]int, n)
+	for i := range matrice_finale {
+		matrice_finale[i] = make([]int, n)
+	}
+
+	for i := 0; i < n; i++ {
+		for j := 0; j < n; j++ {
+			conversion, err := strconv.Atoi(data3[i][j])
+			fmt.Println("Conversion = ", conversion)
+			matrice_finale[i][j] = conversion
+			if err != nil {
+				fmt.Println("Error during conversion")
+			}
+		}
+	}
+	fmt.Printf("\n Print de la matrice finale (en int) \n")
+	for i := 0; i < len(matrice_finale); i++ {
+		for j := 0; j < len(matrice_finale); j++ {
+			fmt.Print(matrice_finale[i][j], " ")
+		}
+		fmt.Println("")
+	}
+
+	return matrice_finale
+
+}
 
 func main() {
-	mata := go ReadFile1("matriceA.txt")
-	matb := go ReadFile1("matriceB.txt")
+	matA := ReadFile1("matriceA.txt")
+	matB := ReadFile1("matriceB.txt")
 
-	mata2 := strings.Split(mata, " ")
-	fmt.Printf("Print de la matrice sous forme de tableau de char \n")
-	for i := 0; i < len(mata2); i++ {
-		fmt.Printf(mata2[i])
-	}
-
-	fmt.Printf("\n Détection de la taille de la matrice \n")
-	nA := 0
-	for i := 0; i < len(mata2); i++ {
-		if mata2[i] == "\n" {
-			nA = i
-			break
-		}
-	}
-
-	fmt.Printf("\n")
-	mata3 := make([]string, nA)
-	for i := 0; i < len(mata2); i++ {
-		mata3 := append(strings.Split(mata2[i], "\n"))
-		_ = mata3
-	}
-	print(len(mata3))
-	fmt.Printf("\n")
-	for i := 0; i < len(mata3); i++ {
-		fmt.Printf(mata3[i])
-	}
-	fmt.Printf("\n")
-
-	matb2 := strings.Split(matb, " ")
-	fmt.Printf("Print de la matrice sous forme de tableau de char \n")
-	for i := 0; i < len(matb2); i++ {
-		fmt.Printf(matb2[i])
-	}
-	fmt.Printf("\n")
-
-	fmt.Printf("\n Détection de la taille de la matrice \n")
-	nB := 0
-	for i := 0; i < len(mata2); i++ {
-		if matb2[i] == "\n" {
-			nB = i
-			break
-		}
-	}
-
-	matb3 := make([]string, nB)
-	for i := 0; i < len(matb2); i++ {
-		matb3 := append(strings.Split(matb2[i], "\n"))
-		_ = matb3
-	}
-
-	print(len(matb3))
-	for i := 0; i < len(matb3); i++ {
-		fmt.Printf(matb3[i])
-	}
-	fmt.Printf("\n")
-
-	fmt.Printf("On met tous les chiffres dans un tableau\n")
-	tabA := make([]string, nA*nA)
-	for i := range mata2 {
-		splitage := strings.Split(mata2[i], "\n")
-		for j := range splitage {
-			tabA = append(tabA, splitage[j])
-		}
-	}
-
-	for i := range tabA {
-		fmt.Printf(tabA[i] + " ")
-	}
-
-	fmt.Printf("\nOn convertit les strings du tableau en entiers\n")
-	tabintA := make([]int, nA)
-	fmt.Print("len(tab):", len(tabA))
-	conversion, err := strconv.Atoi(tabA[0])
-	tabintA[0] = conversion
-	fmt.Print("\n tabintA[0] : ", tabintA[0])
-	if err != nil {
-		fmt.Println("Error during conversion")
-	}
-	//matC := matProduct()
-	//ecritDansFichier(matC, matriceC.txt)
+	matAint := matriceEnInt(matA)
+	matBint := matriceEnInt(matB)
+	matC := matProduct(matAint, matBint)
+	ecritDansFichier(matC, "matriceC.txt")
 
 }
