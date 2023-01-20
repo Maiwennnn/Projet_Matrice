@@ -96,7 +96,7 @@ func matProduct(mat1 [][]int, mat2 [][]int) [][]int {
 }
 
 func matriceEnInt(data string) [][]int {
-	data2 := strings.Split(data, "\n")
+	data2 := strings.Split(strings.ReplaceAll(data, "\r\n", "\n"), "\n")
 	fmt.Println("string split a la ligne")
 	fmt.Println(data2)
 	fmt.Printf("\n Détection de la taille de la matrice \n")
