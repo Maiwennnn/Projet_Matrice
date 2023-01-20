@@ -25,8 +25,9 @@ func main() {
 	fmt.Println("Il est ", time.Now())*/
 	//data := ReadFile("matrice_de_test.txt \n")
 	data := "1 1 1\n1 1 1\n1 1 1"
-	print("\n", data)
+	fmt.Println("\n", data)
 	data2 := strings.Split(data, "\n")
+	fmt.Println(data2)
 	fmt.Printf("\n Détection de la taille de la matrice \n")
 	n := len(data2)
 	fmt.Println("La matrice est de taille", n)
