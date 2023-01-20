@@ -2,13 +2,10 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
-	"log"
-	"os"
-	"strconv"
 	"strings"
 )
 
+/*
 func ReadFile(fileName string) string {
 
 	fmt.Printf("\n\nReading a file in Go lang\n")
@@ -109,7 +106,7 @@ func matProduct(mat1 [][]int, mat2 [][]int) [][]int {
 	}
 	printMat(res)
 	return res
-}
+}*/
 
 func main() {
 	mata := ReadFile("matriceA.txt")
@@ -143,6 +140,6 @@ func main() {
 		fmt.Printf(matb3[i])
 	}
 
-	matC := matProduct()
+	//matC := matProduct()
 
 }
