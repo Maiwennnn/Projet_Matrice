@@ -44,12 +44,12 @@ func ecritDansFichier(mat [][]int, nameFile string) {
 }
 func main() {
 	a := [][]int{
-		{0, 3},
-		{6, 7},
+		{1, 3},
+		{6, 9},
 	}
 
-	ecritDansFichier(a, "test.txt")
-	matEnStr := ReadFile("test.txt")
+	go secritDansFichier(a, "test.txt")
+	matEnStr := go ReadFile("test.txt")
 	fmt.Printf("2eme print")
 	fmt.Printf(matEnStr)
 
