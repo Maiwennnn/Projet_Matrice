@@ -95,7 +95,7 @@ func matProduct(mat1 [][]int, mat2 [][]int) [][]int {
 	return res
 }
 
-func matriceEnInt(data string) [][]int {
+func matriceEnInt(data string, ch map[int]chan int) {
 	data2 := strings.Split(strings.ReplaceAll(data, "\r\n", "\n"), "\n")
 	fmt.Println("string split a la ligne")
 	fmt.Println(data2)
@@ -148,25 +148,40 @@ func matriceEnInt(data string) [][]int {
 	for i := 0; i < len(matrice_finale); i++ {
 		for j := 0; j < len(matrice_finale); j++ {
 			fmt.Print(matrice_finale[i][j], " ")
+			ch[i] <- matrice_finale[i][j]
 		}
 		fmt.Println("")
 	}
 
-	return matrice_finale
-
 }
 
 func main() {
+	os.Truncate("/matriceC", 0)
 	cA := make(chan string)
 	cB := make(chan string)
 	go ReadFile("matriceA.txt", cA)
 	go ReadFile("matriceB.txt", cB)
 	matA := <-cA
 	matB := <-cB
+	_ = matB
 
-	matAint := matriceEnInt(matA)
-	matBint := matriceEnInt(matB)
-	matC := matProduct(matAint, matBint)
-	go ecritDansFichier(matC, "matriceC.txt")
+	chA := make(map[int]chan int)
+	for i := 1; i < len(matA); i++ {
+		chA[i] = make(chan int)
+	}
+	go matriceEnInt(matA, chA)
+	matAint := <-chA[i]
+
+	// autre facon faire channel, pas teste,
+	channel_second := [3]chan int{
+		channel1,
+		channel2,
+		channel3,
+	}
+
+	//matBint := matriceEnInt(matB)
+
+	//matC := matProduct(matAint, matBint)
+	//go ecritDansFichier(matC, "matriceC.txt")
 
 }
