@@ -9,9 +9,10 @@ import (
 )
 
 const (
-	HOST = "localhost"
-	PORT = "8080"
-	TYPE = "tcp"
+	HOST       = "localhost"
+	PORT       = "8080"
+	TYPE       = "tcp"
+	BUFFERSIZE = 1024
 )
 
 func main() {
