@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-func ReadFile(fileName string) string {
+func ReadFile(fileName string, c chan string) {
 
 	fmt.Printf("\n\nReading a file in Go lang\n")
 	//fileName := "test.txt"
@@ -24,7 +24,7 @@ func ReadFile(fileName string) string {
 	fmt.Printf("\nSize: %d bytes", len(data))
 	fmt.Printf("\nData: %s", data) // conversion de byte en string
 	s := string(data)
-	return s
+	c <- s
 }
 
 func ecritDansFichier(mat [][]int, nameFile string) {
@@ -48,8 +48,10 @@ func main() {
 		{6, 9},
 	}
 
-	go secritDansFichier(a, "test.txt")
-	matEnStr := go ReadFile("test.txt")
+	go ecritDansFichier(a, "test.txt")
+	c := make(chan string)
+	go ReadFile("test.txt", c)
+	matEnStr := <-c
 	fmt.Printf("2eme print")
 	fmt.Printf(matEnStr)
 

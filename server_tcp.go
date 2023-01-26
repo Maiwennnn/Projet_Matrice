@@ -2,49 +2,49 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net"
 	"os"
+	"time"
 )
 
 const (
-	CONN_HOST = "localhost"
-	CONN_PORT = "3333"
-	CONN_TYPE = "tcp"
+	HOST = "localhost"
+	PORT = "8080"
+	TYPE = "tcp"
 )
 
 func main() {
-	// Listen for incoming connections.
-	l, err := net.Listen(CONN_TYPE, CONN_HOST+":"+CONN_PORT)
+	listen, err := net.Listen(TYPE, HOST+":"+PORT)
 	if err != nil {
-		fmt.Println("Error listening:", err.Error())
+		log.Fatal(err)
 		os.Exit(1)
 	}
-	// Close the listener when the application closes.
-	defer l.Close()
-	fmt.Println("Listening on " + CONN_HOST + ":" + CONN_PORT)
+	// close listener
+	defer listen.Close()
 	for {
-		// Listen for an incoming connection.
-		conn, err := l.Accept()
+		conn, err := listen.Accept()
 		if err != nil {
-			fmt.Println("Error accepting: ", err.Error())
+			log.Fatal(err)
 			os.Exit(1)
 		}
-		// Handle connections in a new goroutine.
 		go handleRequest(conn)
 	}
 }
 
-// Handles incoming requests.
 func handleRequest(conn net.Conn) {
-	// Make a buffer to hold incoming data.
-	buf := make([]byte, 1024)
-	// Read the incoming connection into the buffer.
-	reqLen, err := conn.Read(buf)
+	// incoming request
+	buffer := make([]byte, 1024)
+	_, err := conn.Read(buffer)
 	if err != nil {
-		fmt.Println("Error reading:", err.Error())
+		log.Fatal(err)
 	}
-	// Send a response back to person contacting us.
-	conn.Write([]byte("Message received."))
-	// Close the connection when you're done with it.
+
+	// write data to response
+	time := time.Now().Format(time.ANSIC)
+	responseStr := fmt.Sprintf("Your message is: %v. Received time: %v", string(buffer[:]), time)
+	conn.Write([]byte(responseStr))
+
+	// close conn
 	conn.Close()
 }

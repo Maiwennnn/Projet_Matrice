@@ -7,6 +7,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func ReadFile(fileName string, c chan string) {
@@ -60,7 +61,7 @@ func createEmptyMat(n int) [][]int {
 	for i := range mat {
 		mat[i] = make([]int, n)
 	}
-	fmt.Println("Une matrice vide a été créée ")
+	//fmt.Println("Une matrice vide a été créée ")
 	return mat
 }
 
@@ -76,26 +77,27 @@ func createMat(n int, k int) [][]int {
 			mat[i][j] = k
 		}
 	}
-	fmt.Println("La matrice suivante a été crée : ")
-	printMat(mat)
+	//fmt.Println("La matrice suivante a été crée : ")
+	//printMat(mat)
 	return mat
 }
-func matProduct(mat1 [][]int, mat2 [][]int) [][]int {
+func matProduct1(mat1 [][]int, mat2 [][]int, c chan []int, i int) {
 	//this function calculates, returns and displays the product of mat1 and mat2
-	fmt.Println("***Produit de deux matrices***")
-	res := createEmptyMat(len(mat1))
-	for i := 0; i < len(mat1); i++ {
-		for j := 0; j < len(mat1); j++ {
-			for k := 0; k < len(mat1); k++ {
-				res[i][j] += mat1[i][k] * mat2[k][j]
-			}
+	//fmt.Println("***Produit de deux matrices***")
+	res := make([]int, len(mat1))
+
+	for j := 0; j < len(mat1); j++ {
+		for k := 0; k < len(mat1); k++ {
+			res[j] += mat1[i][k] * mat2[k][j]
 		}
+		//fmt.Print(res[j], " ")
 	}
-	printMat(res)
-	return res
+	//fmt.Print("")
+	c <- res
+
 }
 
-func matriceEnInt(data string, ch map[int]chan int) {
+func matriceEnInt(data string) [][]int {
 	data2 := strings.Split(strings.ReplaceAll(data, "\r\n", "\n"), "\n")
 	fmt.Println("string split a la ligne")
 	fmt.Println(data2)
@@ -148,40 +150,46 @@ func matriceEnInt(data string, ch map[int]chan int) {
 	for i := 0; i < len(matrice_finale); i++ {
 		for j := 0; j < len(matrice_finale); j++ {
 			fmt.Print(matrice_finale[i][j], " ")
-			ch[i] <- matrice_finale[i][j]
 		}
 		fmt.Println("")
 	}
 
+	return matrice_finale
+
 }
 
 func main() {
-	os.Truncate("/matriceC", 0)
-	cA := make(chan string)
+	var start time.Time
+	start = time.Now()
+
+	/*cA := make(chan string)
 	cB := make(chan string)
 	go ReadFile("matriceA.txt", cA)
 	go ReadFile("matriceB.txt", cB)
 	matA := <-cA
-	matB := <-cB
-	_ = matB
+	matB := <-cB*/
 
-	chA := make(map[int]chan int)
-	for i := 1; i < len(matA); i++ {
-		chA[i] = make(chan int)
-	}
-	go matriceEnInt(matA, chA)
-	matAint := <-chA[i]
+	matAint := createMat(100, 5)
+	matBint := createMat(100, 1)
 
-	// autre facon faire channel, pas teste,
-	channel_second := [3]chan int{
-		channel1,
-		channel2,
-		channel3,
-	}
-
+	//matAint := matriceEnInt(matA)
 	//matBint := matriceEnInt(matB)
 
-	//matC := matProduct(matAint, matBint)
-	//go ecritDansFichier(matC, "matriceC.txt")
+	channel_second := make([]chan []int, len(matAint))
+	for i := range channel_second {
+		channel_second[i] = make(chan []int)
+	}
+
+	matC := make([][]int, len(matAint))
+	for i := 0; i < len(matAint); i++ {
+		go matProduct1(matAint, matBint, channel_second[i], i)
+		matC[i] = <-channel_second[i]
+	}
+	//printMat(matC)
+
+	ecritDansFichier(matC, "matriceC.txt")
+	t := time.Now()
+	elapsed := t.Sub(start)
+	fmt.Print("time", elapsed)
 
 }

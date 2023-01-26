@@ -7,6 +7,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func ReadFile1(fileName string) string {
@@ -29,7 +30,7 @@ func ReadFile1(fileName string) string {
 }
 
 func ecritDansFichier(mat [][]int, nameFile string) {
-	file, err := os.OpenFile(nameFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0600)
+	file, err := os.Create(nameFile)
 	defer file.Close() // on ferme automatiquement à la fin de notre programme
 	for i := 0; i < len(mat); i++ {
 		s := ""
@@ -60,7 +61,7 @@ func createEmptyMat(n int) [][]int {
 	for i := range mat {
 		mat[i] = make([]int, n)
 	}
-	fmt.Println("Une matrice vide a été créée ")
+	//fmt.Println("Une matrice vide a été créée ")
 	return mat
 }
 
@@ -76,13 +77,13 @@ func createMat(n int, k int) [][]int {
 			mat[i][j] = k
 		}
 	}
-	fmt.Println("La matrice suivante a été crée : ")
-	printMat(mat)
+	//fmt.Println("La matrice suivante a été crée : ")
+	//printMat(mat)
 	return mat
 }
 func matProduct(mat1 [][]int, mat2 [][]int) [][]int {
 	//this function calculates, returns and displays the product of mat1 and mat2
-	fmt.Println("***Produit de deux matrices***")
+	//fmt.Println("***Produit de deux matrices***")
 	res := createEmptyMat(len(mat1))
 	for i := 0; i < len(mat1); i++ {
 		for j := 0; j < len(mat1); j++ {
@@ -91,7 +92,7 @@ func matProduct(mat1 [][]int, mat2 [][]int) [][]int {
 			}
 		}
 	}
-	printMat(res)
+	//printMat(res)
 	return res
 }
 
@@ -157,12 +158,25 @@ func matriceEnInt(data string) [][]int {
 }
 
 func main() {
-	matA := ReadFile1("matriceA.txt")
-	matB := ReadFile1("matriceB.txt")
+	var start time.Time
+	start = time.Now()
 
-	matAint := matriceEnInt(matA)
-	matBint := matriceEnInt(matB)
+	/*cA := make(chan string)
+	cB := make(chan string)
+	go ReadFile("matriceA.txt", cA)
+	go ReadFile("matriceB.txt", cB)
+	matA := <-cA
+	matB := <-cB*/
+
+	matAint := createMat(100, 5)
+	matBint := createMat(100, 1)
+
+	//matAint := matriceEnInt(matA)
+	//matBint := matriceEnInt(matB)
 	matC := matProduct(matAint, matBint)
 	ecritDansFichier(matC, "matriceC.txt")
+	t := time.Now()
+	elapsed := t.Sub(start)
+	fmt.Print("time", elapsed)
 
 }
