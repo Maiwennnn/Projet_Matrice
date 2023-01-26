@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"log"
+	"io"
 	"net"
 	"os"
-	"time"
+	"strconv"
+	"strings"
 )
 
 const (
@@ -16,36 +17,49 @@ const (
 )
 
 func main() {
-	listen, err := net.Listen(TYPE, HOST+":"+PORT)
+	server, err := net.Listen(TYPE, HOST+":"+PORT)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println("Error listening: ", err)
 		os.Exit(1)
 	}
-	// close listener
-	defer listen.Close()
+	defer server.Close()
+	fmt.Println("Connected to client, start receiving the file name and file size")
+	bufferFileName := make([]byte, 64)
+	bufferFileSize := make([]byte, 10)
+
+	fmt.Println("Server started! Waiting for connections...")
 	for {
-		conn, err := listen.Accept()
+		connection, err := server.Accept()
 		if err != nil {
-			log.Fatal(err)
+			fmt.Println("Error: ", err)
 			os.Exit(1)
 		}
-		go handleRequest(conn)
+		fmt.Println("Client connected")
+		connection.Read(bufferFileSize)
+		fileSize, _ := strconv.ParseInt(strings.Trim(string(bufferFileSize), ":"), 10, 64)
+
+		connection.Read(bufferFileName)
+		fileName := strings.Trim(string(bufferFileName), ":")
+
+		newFile, err := os.Create(fileName)
+
+		if err != nil {
+			panic(err)
+		}
+		defer newFile.Close()
+		var receivedBytes int64
+
+		for {
+			if (fileSize - receivedBytes) < BUFFERSIZE {
+				io.CopyN(newFile, connection, (fileSize - receivedBytes))
+				connection.Read(make([]byte, (receivedBytes+BUFFERSIZE)-fileSize))
+				break
+			}
+			io.CopyN(newFile, connection, BUFFERSIZE)
+			receivedBytes += BUFFERSIZE
+		}
+		fmt.Println("Received file completely!")
+
 	}
-}
 
-func handleRequest(conn net.Conn) {
-	// incoming request
-	buffer := make([]byte, 1024)
-	_, err := conn.Read(buffer)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// write data to response
-	time := time.Now().Format(time.ANSIC)
-	responseStr := fmt.Sprintf("Your message is: %v. Received time: %v", string(buffer[:]), time)
-	conn.Write([]byte(responseStr))
-
-	// close conn
-	conn.Close()
 }

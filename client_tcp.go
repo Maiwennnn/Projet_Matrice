@@ -27,10 +27,10 @@ func fillString(retunString string, toLength int) string {
 	return retunString
 }
 
-func sendFileToClient(connection net.Conn) {
-	fmt.Println("A client has connected!")
+func sendFileToServer(connection net.Conn) {
+	fmt.Println("On envoie le fichier au serveur")
 	defer connection.Close()
-	file, err := os.Open("dummyfile.dat")
+	file, err := os.Open("matriceA.txt")
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -59,34 +59,12 @@ func sendFileToClient(connection net.Conn) {
 }
 
 func main() {
-	tcpServer, err := net.ResolveTCPAddr(TYPE, HOST+":"+PORT)
-
+	connection, err := net.Dial(TYPE, HOST+":"+PORT)
 	if err != nil {
-		println("ResolveTCPAddr failed:", err.Error())
-		os.Exit(1)
+		panic(err)
 	}
+	defer connection.Close()
+	fmt.Println("Connected to server")
+	go sendFileToServer(connection)
 
-	conn, err := net.DialTCP(TYPE, nil, tcpServer)
-	if err != nil {
-		println("Dial failed:", err.Error())
-		os.Exit(1)
-	}
-
-	_, err = conn.Write([]byte("This is a message"))
-	if err != nil {
-		println("Write data failed:", err.Error())
-		os.Exit(1)
-	}
-
-	// buffer to get data
-	received := make([]byte, 1024)
-	_, err = conn.Read(received)
-	if err != nil {
-		println("Read data failed:", err.Error())
-		os.Exit(1)
-	}
-
-	println("Received message:", string(received))
-
-	conn.Close()
 }
