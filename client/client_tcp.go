@@ -27,9 +27,9 @@ func fillString(retunString string, toLength int) string {
 	return retunString
 }
 
-func sendFileToServer(connection net.Conn) {
+func sendFileToServer(connection net.Conn, nomFile string) {
 	fmt.Println("On envoie le fichier au serveur")
-	file, err := os.Open("matrice_de_test.txt")
+	file, err := os.Open(nomFile)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -66,7 +66,8 @@ func main() {
 	}
 
 	fmt.Println("Connected to server")
-	sendFileToServer(connection)
+	sendFileToServer(connection, "matriceA.txt")
+	sendFileToServer(connection, "matriceB.txt")
 	defer connection.Close()
 
 }
