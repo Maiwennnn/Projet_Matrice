@@ -30,7 +30,7 @@ func ReadFile(fileName string, c chan string) {
 }
 
 func ecritDansFichier(mat [][]int, nameFile string) {
-	file, err := os.OpenFile(nameFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0600)
+	file, err := os.Create(nameFile)
 	defer file.Close() // on ferme automatiquement à la fin de notre programme
 	for i := 0; i < len(mat); i++ {
 		s := ""
@@ -187,7 +187,7 @@ func main() {
 	}
 	//printMat(matC)
 
-	ecritDansFichier(matC, "matriceC.txt")
+	go ecritDansFichier(matC, "matriceC.txt")
 	t := time.Now()
 	elapsed := t.Sub(start)
 	fmt.Print("time", elapsed)
