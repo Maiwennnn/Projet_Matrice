@@ -177,6 +177,8 @@ func traitement_matrices() { //on lit les matrices recues, puis on les multiplie
 	matC := make([][]int, len(matAint))
 	for i := 0; i < len(matAint); i++ {
 		go matProduct1(matAint, matBint, channel_second[i], i)
+	}
+	for i := 0; i < len(matAint); i++ {
 		matC[i] = <-channel_second[i]
 	}
 	ecritDansFichier(matC, "matriceC.txt")

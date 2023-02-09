@@ -7,8 +7,11 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
+
+var wg sync.WaitGroup
 
 func ReadFile(fileName string, c chan string) {
 
@@ -81,19 +84,23 @@ func createMat(n int, k int) [][]int {
 	//printMat(mat)
 	return mat
 }
-func matProduct1(mat1 [][]int, mat2 [][]int, c chan []int, i int) {
+func matProduct1(mat1 [][]int, mat2 [][]int, r []chan []int, job chan int) {
 	//this function calculates, returns and displays the product of mat1 and mat2
 	//fmt.Println("***Produit de deux matrices***")
-	res := make([]int, len(mat1))
 
-	for j := 0; j < len(mat1); j++ {
-		for k := 0; k < len(mat1); k++ {
-			res[j] += mat1[i][k] * mat2[k][j]
+	for i := range job {
+		res := make([]int, len(mat1))
+
+		for j := 0; j < len(mat1); j++ {
+			for k := 0; k < len(mat1); k++ {
+				res[j] += mat1[i][k] * mat2[k][j]
+			}
+			//fmt.Print(res[j], " ")
 		}
-		//fmt.Print(res[j], " ")
+		//fmt.Print("")
+		defer wg.Done()
+		r[i] <- res
 	}
-	//fmt.Print("")
-	c <- res
 
 }
 
@@ -158,6 +165,14 @@ func matriceEnInt(data string) [][]int {
 
 }
 
+func gestion_job(tailleMat int, job chan int) {
+	for j := 1; j <= tailleMat; j++ {
+		job <- j
+	}
+	close(job)
+
+}
+
 func main() {
 	var start time.Time
 	start = time.Now()
@@ -172,20 +187,24 @@ func main() {
 	matAint := createMat(100, 5)
 	matBint := createMat(100, 1)
 
-	//matAint := matriceEnInt(matA)
-	//matBint := matriceEnInt(matB)
-
-	channel_second := make([]chan []int, len(matAint))
-	for i := range channel_second {
-		channel_second[i] = make(chan []int)
+	result := make([]chan []int, len(matAint))
+	for i := range result {
+		result[i] = make(chan []int)
 	}
+	job := make(chan int, len(matAint))
 
 	matC := make([][]int, len(matAint))
-	for i := 0; i < len(matAint); i++ {
-		go matProduct1(matAint, matBint, channel_second[i], i)
-		matC[i] = <-channel_second[i]
+	for i := 0; i < 10; i++ {
+		wg.Add(1)
+		go matProduct1(matAint, matBint, result, job)
 	}
-	//printMat(matC)
+	wg.Wait()
+
+	go gestion_job(len(matAint), job)
+
+	for i := 0; i < len(matAint); i++ {
+		matC[i] = <-result[i]
+	}
 
 	go ecritDansFichier(matC, "matriceC.txt")
 	t := time.Now()
