@@ -27,12 +27,18 @@ func ecritDansFichier(mat [][]int, nameFile string) {
 	defer file.Close() // on ferme automatiquement à la fin de notre programme
 	for i := 0; i < len(mat); i++ {
 		s := ""
-		for j := 0; j < len(mat); j++ {
+		for j := 0; j < (len(mat) - 1); j++ {
 			s = s + strconv.Itoa(mat[i][j]) + " "
 		}
+		s = s + strconv.Itoa(mat[i][len(mat)-1])
 
 		_, err = file.WriteString(s) // écrire dans le fichier
-		s = "\n"
+		if i != (len(mat) - 1) {
+			s = "\n"
+		} else {
+			s = ""
+		}
+
 		_, err = file.WriteString(s)
 	}
 	fmt.Print(err)
@@ -40,5 +46,5 @@ func ecritDansFichier(mat [][]int, nameFile string) {
 }
 
 func main() {
-	ecritDansFichier(createMat2(100), "matriceB.txt")
+	ecritDansFichier(createMat2(10), "matriceB.txt")
 }
